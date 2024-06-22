@@ -1,8 +1,8 @@
-# GateServer
+## GateServer
 
-## 项目中的知识点
+### 项目中的知识点
 
-### 知识点1：C++做Http服务器不是首选
+#### 知识点1：C++做Http服务器不是首选
 - `C++`的优势在于没有垃圾回收机制（`GC`），可以做TCP的长连接。若是`HTTP`这种短连接可以使用`nodejs`或`go`或`java`来实现，用`C++`实现会较为繁琐，需要自己造轮子。  
 - 但在本项目中，为了技术栈的统一：客户端使用`C++`的`Qt`，将来后端的`TCP`也是用`C++`，那么网关`GateServer`的`Http-Socket`通信也顺带着用`C++`进行实现。  
 - 项目中选择使用`boost`库中的`beast`网络库去实现一个网关服务器（网关服务器主要负责应答客户端基本的连接请求，包括根据服务器负载情况选择合适的服务器给客户端登录、注册，获取验证服务等，接收`Http`请求并应答）。
@@ -17,7 +17,7 @@ uuid库用于生成一个随机码
 ```
 - Qt客户端-GateServer后端通信时，使用多线程+asio_io_context连接池；
 
-### 知识点2：`Boost`库的`Windows`编译安装，并在VS中配置该库
+#### 知识点2：`Boost`库的`Windows`编译安装，并在VS中配置该库
 - 下载`Boost`源码，并解压缩。
 - 点击`booststrap.bat`后生成编译程序`b2.exe`
 - 使用命令：`.\b2.exe install --toolset=msvc-14.3 --build-type=complete --prefix="D:\CPPSoft\boost_1_85_0" link=static runtime-link=shared threading=multi debug release`
@@ -34,13 +34,13 @@ uuid库用于生成一个随机码
 - **一句话简化上面的含义，就是我们生成的是`lib`库，运行时采用的`md`加载模式。** 
 
 > 库源码编译并导入VS中
-### 知识点3：`jsoncpp`库的`Windows`编译，并在VS中配置该库
+#### 知识点3：`jsoncpp`库的`Windows`编译，并在VS中配置该库
 - 下载`jsoncpp`源码，并解压缩。
 - 新建build文件夹，随后使用cmake-gui生成jsoncpp.sln（我下载的版本中makefiles文件夹-->vs71文件夹下有jsoncpp.sln文件），可以双击通过VS进行Debug和Release的编译。**编译时记得选择使用/MDd和/MD方式链接**。
 - 只选择编译lib_json即可，编译后在当前目录下会生成x64-->Debug和Release文件夹
 - 在VS中配置jsoncpp库的头文件目录、库文件目录以及库文件名
 
-### 知识点4：`grpc`库的`Windows`编译，并在VS中配置该库
+#### 知识点4：`grpc`库的`Windows`编译，并在VS中配置该库
 - 下载`grpc`源码，并更新下载一些子模块（git submodule update --init）,需要的子模块依赖信息在`.gitmodules`文件中
 ```
 [submodule "third_party/zlib"]
@@ -118,7 +118,7 @@ D:\CPPSoft\grpc\visualpro\third_party\protobuf\Debug\protoc.exe --cpp_out=. "mes
 ```
 - 将上述中生成的四个.pb.h或.pb.cc文件，连同.proto文件一同添加进项目中
 
-### 知识点5：`hredis`库的`Windows`编译，并在VS中配置该库
+#### 知识点5：`hredis`库的`Windows`编译，并在VS中配置该库
 - windows下的redis服务程序：[Redis for Windows 5.0.14.1](https://github.com/tporadowski/redis/releases/download/v5.0.14.1/Redis-x64-5.0.14.1.zip)，下载解压后可直接使用redis服务
     - redis-server.exe为redis服务端的启动程序：`.\redis-server.exe .\redis.windows.conf`启动redis服务器
     - redis.windows.conf为redis服务端的配置文件，可修改端口和密码等
@@ -129,7 +129,7 @@ D:\CPPSoft\grpc\visualpro\third_party\protobuf\Debug\protoc.exe --cpp_out=. "mes
     - **测试hredis的C语言API时编译的错误2**：在同时使用Redis连接和http-socket连接时，遇到了Win32_Interop.lib和WS2_32.lib冲突的问题, 因为我们底层用了socket作为网络通信，也用redis(redis也通过socket通信)，导致两个库冲突。引起原因主要是Redis库Win32_FDAPI.cpp有重新定义了socket的一些方法引起来冲突。
     - 错误2需要去掉Redis库里面的socket的函数的重定义，把所有使用这些方法的地方都改一下函数名，比较麻烦，可以直接拷贝[别人修改好的redis源码](https://gitee.com/secondtonone1/windows-redis)，重新编译一下hredis和Win32_Interop的lib库。
 
-### 知识点6：视图-->属性管理器-->Debug | x64中添加新的项目属性表PropertySheet
+#### 知识点6：视图-->属性管理器-->Debug | x64中添加新的项目属性表PropertySheet
 - 本项目中我们用到了Boost、jsoncpp、grpc、hredis、MySQL等库。
 - 为了方便其他项目使用，我们将这些库配置在项目属性表文件PropertySheet.props，以方便在其他项目中直接复制该文件，无需重复配置这些库。
 ```
@@ -154,10 +154,10 @@ D:\CPPSoft\grpc\visualpro\third_party\protobuf\Debug\protoc.exe --cpp_out=. "mes
 </Project>
 ```
 
-### 知识点7：VS中配置头文件、库文件以及库文件名的选项
+#### 知识点7：VS中配置头文件、库文件以及库文件名的选项
 - 头文件配置：`VC++目录-->包含目录`或`C/C++->常规->附加包含目录`添加库的头文件目录
 - 库文件配置：`VC++目录-->库文件目录`或`链接器->常规->附加库目录`添加库的lib文件所在目录
 - 库文件名配置：`链接器->输入->附加依赖项`中配置库文件名称
 - 运行时链接方式配置：`C/C++-->代码生成-->运行库-->多线程调试DLL(/MDd)`选择多线程动态链接。上述中用到的库在编译时都采用多线程动态链接（/MDd或/MD）。
 
-### 知识点8：
+#### 知识点8：
